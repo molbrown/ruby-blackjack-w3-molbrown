@@ -191,18 +191,21 @@ class Game
 
     def pay_ten
         @wallet = @wallet - 10
-        @hand = []
-        @total = 0
-        @d_hand = []
-        @d_total = 0
+        new_round
     end
 
     def earn_ten
         @wallet = @wallet + 10
+        new_round
+    end
+
+    def new_round
         @hand = []
         @total = 0
         @d_hand = []
         @d_total = 0
+        @shoe = Deck.new
+            @shoe.shuffle
     end
 
     # def play_again
