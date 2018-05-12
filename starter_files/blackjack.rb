@@ -77,7 +77,7 @@ end
 # 7.times { puts deck.draw.rank }
 
 class Game
-    attr_accessor :wallet, :hand, :shoe, :total
+    attr_accessor :wallet, :hand, :shoe, :total, :d_hand, :d_total
 
     def initialize(wallet)
         @wallet = wallet
@@ -85,6 +85,8 @@ class Game
             @shoe.shuffle
         @hand = []
         @total = 0
+        @d_hand = []
+        @d_total = 0
     end
 
     def bet
@@ -100,10 +102,15 @@ class Game
         if @total > 21 && @hand.include?(:A)
             @total = @total - 10
             total_result
+            get_input
         elsif @total > 21
-            puts "Your total is #{@total}. You bust!"
+            total_result
+            puts "You bust!\n\n----\n\n"
+            pay_ten
+            # any key for next round
         else 
             total_result
+            get_input
         end
     end
 
@@ -115,11 +122,12 @@ class Game
 
     def hit
         @hand.push(@shoe.draw)
+        @total = 0
         @total = @hand.inject(0){ |sum,x| sum + x.value }
         analyze_total
     end
     
-    def get_yes_or_no
+    def get_input
         # loop until you get a good answer and return
         while true
             puts "Do you want to (h)it or (s)tand? "
@@ -129,7 +137,8 @@ class Game
                 hit
                 return
             elsif answer[0] == "s"
-                print "You stand. Your total is #{@total}."
+                print "You stand. Your total is #{@total}.\n"
+                dealer
                 return
             else
                 puts "That is not a valid answer!"
@@ -137,6 +146,64 @@ class Game
         end
     end
 
+    def dealer_hit
+        puts "The dealer hits."
+        @d_hand.push(@shoe.draw)
+            @d_total = 0
+            @d_total = @d_hand.inject(0){ |sum,x| sum + x.value }
+        dealer_analyze
+    end
+
+    def round_result
+        if @total > @d_total
+            puts "You win!\n\n----\n\n"
+            earn_ten
+            return
+        elsif @total = @d_total
+            puts "You lose!\n\n----\n\n"
+            pay_ten
+            return
+        else
+            "It's a tie!\n\n----\n\n"
+        end
+    end
+
+    def dealer_analyze
+        if @d_total > 21 && @d_hand.include?(:A)
+            @d_total = @d_total - 10
+        elsif @d_total > 21
+            puts "The dealer's total is #{@d_total}. You win!\n\n----\n\n"
+            earn_ten
+            return
+        elsif @d_total > 17
+            puts "The dealer stands. The dealer has a total of #{@d_total}."
+            round_result
+        else
+            dealer_hit
+        end
+    end
+
+    def dealer
+        2.times { @d_hand.push(@shoe.draw) }
+        @d_total = @d_hand.inject(0){ |sum,x| sum + x.value }
+        dealer_analyze 
+    end
+
+    def pay_ten
+        @wallet = @wallet - 10
+        @hand = []
+        @total = 0
+        @d_hand = []
+        @d_total = 0
+    end
+
+    def earn_ten
+        @wallet = @wallet + 10
+        @hand = []
+        @total = 0
+        @d_hand = []
+        @d_total = 0
+    end
 
     # def play_again
 
@@ -146,14 +213,15 @@ class Game
 
     # end
 
+    def run_game
+        puts "Hello and welcome to the game of blackjack! Let's begin.\n\n"
+        while @wallet > 9
+            bet
+            new_hand
+        end
+    end
 
 end
 
 play = Game.new(100)
-# play.run
-# shoe = Deck.new
-# shoe.shuffle
-puts "Hello and welcome to the game of blackjack! Let's begin.\n\n"
-play.bet
-play.new_hand
-play.get_yes_or_no
+play.run_game
