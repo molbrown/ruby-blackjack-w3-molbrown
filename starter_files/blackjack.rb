@@ -98,12 +98,18 @@ class Game
         puts "You have #{ranks.join(", ")} in your hand. Your total is #{@total}."
     end
     
+    def ace_value
+        if @total > 21 && @hand.detect { |x| x.value == 11 }
+            ace = @hand.detect { |x| x.value == 11 }
+            ace.value = 1
+            @total = 0
+            @total = @hand.inject(0){ |sum,x| sum + x.value }
+        end
+    end
+
     def analyze_total
-        if @total > 21 && @hand.include?(:A)
-            @total = @total - 10
-            total_result
-            get_input
-        elsif @total > 21
+        ace_value
+        if @total > 21
             total_result
             puts "You bust!\n\n----\n\n"
             pay_ten
@@ -159,12 +165,14 @@ class Game
             puts "You win!\n\n----\n\n"
             earn_ten
             return
-        elsif @total = @d_total
+        elsif @total < @d_total
             puts "You lose!\n\n----\n\n"
             pay_ten
             return
         else
-            "It's a tie!\n\n----\n\n"
+            puts "It's a tie!\n\n----\n\n"
+            new_round
+            return
         end
     end
 
