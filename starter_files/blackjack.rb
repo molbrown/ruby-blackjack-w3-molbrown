@@ -77,38 +77,74 @@ end
 # 7.times { puts deck.draw.rank }
 
 class Game
-    attr_accessor :wallet, :hand, :shoe
+    attr_accessor :wallet, :hand, :shoe, :total
 
     def initialize(wallet)
         @wallet = wallet
         @shoe = Deck.new
             @shoe.shuffle
         @hand = []
+        @total = 0
     end
 
     def bet
         @wallet > 9 ? (puts "You have $#{@wallet} and bet $10.") : (puts "You are out of money.")
     end
 
-    def new_hand
-        2.times { @hand.push(@shoe.draw) }
-        total = @hand[0].value + @hand[1].value
-        puts "You have a #{hand[0].rank} and a #{hand[1].rank} in your hand. Your total is #{total}."
+    def total_result
+        ranks = @hand.map { |y| y.rank }
+        puts "You have #{ranks.join(", ")} in your hand. Your total is #{@total}."
     end
     
     def analyze_total
-        if total > 21 && @hand.include?
-            puts "You bust!"
-        elsif total > 
-
-
-    def play_again
-
+        if @total > 21 && @hand.include?(:A)
+            @total = @total - 10
+            total_result
+        elsif @total > 21
+            puts "Your total is #{@total}. You bust!"
+        else 
+            total_result
+        end
     end
 
-    def run
-
+    def new_hand
+        2.times { @hand.push(@shoe.draw) }
+        @total = @hand.inject(0){ |sum,x| sum + x.value }
+        analyze_total
     end
+
+    def hit
+        @hand.push(@shoe.draw)
+        @total = @hand.inject(0){ |sum,x| sum + x.value }
+        analyze_total
+    end
+    
+    def get_yes_or_no
+        # loop until you get a good answer and return
+        while true
+            puts "Do you want to (h)it or (s)tand? "
+            answer = gets.chomp.downcase
+            if answer[0] == "h"
+                print "You hit."
+                hit
+                return
+            elsif answer[0] == "s"
+                print "You stand. Your total is #{@total}."
+                return
+            else
+                puts "That is not a valid answer!"
+            end
+        end
+    end
+
+
+    # def play_again
+
+    # end
+
+    # def run
+
+    # end
 
 
 end
@@ -120,3 +156,4 @@ play = Game.new(100)
 puts "Hello and welcome to the game of blackjack! Let's begin.\n\n"
 play.bet
 play.new_hand
+play.get_yes_or_no
