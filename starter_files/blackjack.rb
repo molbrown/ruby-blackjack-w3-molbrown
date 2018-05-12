@@ -1,4 +1,4 @@
-
+require 'pry'
 
 class Card
     attr_accessor :rank, :suit, :value
@@ -14,7 +14,7 @@ class Card
                 when :A
                     11
                 when 2..10
-                    @rank.to_i
+                    @rank
                 when :J
                     10
                 when :Q
@@ -77,17 +77,46 @@ end
 # 7.times { puts deck.draw.rank }
 
 class Game
-    attr_accessor :wallet
+    attr_accessor :wallet, :hand, :shoe
 
     def initialize(wallet)
         @wallet = wallet
+        @shoe = Deck.new
+            @shoe.shuffle
+        @hand = []
+    end
+
+    def bet
+        @wallet > 9 ? (puts "You have $#{@wallet} and bet $10.") : (puts "You are out of money.")
+    end
+
+    def new_hand
+        2.times { @hand.push(@shoe.draw) }
+        total = @hand[0].value + @hand[1].value
+        puts "You have a #{hand[0].rank} and a #{hand[1].rank} in your hand. Your total is #{total}."
+    end
+    
+    def analyze_total
+        if total > 21 && @hand.include?
+            puts "You bust!"
+        elsif total > 
+
+
+    def play_again
+
+    end
+
+    def run
+
     end
 
 
-
-
-
-
-wallet = 100
-
 end
+
+play = Game.new(100)
+# play.run
+# shoe = Deck.new
+# shoe.shuffle
+puts "Hello and welcome to the game of blackjack! Let's begin.\n\n"
+play.bet
+play.new_hand
