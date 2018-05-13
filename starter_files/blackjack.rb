@@ -6,10 +6,10 @@ class Card
     def initialize(rank, suit)
         @rank = rank
         @suit = suit
-        @value = value
+        @value = what_value
     end
 
-    def value 
+    def what_value 
         @value = case @rank
                 when :A
                     11
@@ -99,15 +99,20 @@ class Game
     end
     
     def ace_value
-        if @total > 21 && @hand.detect { |x| x.value == 11 }
-            ace = @hand.detect { |x| x.value == 11 }
-            ace.value = 1
+        @total = 0
+        @total = @hand.inject(0){ |sum,x| sum + x.value }
+        vals = @hand.map { |y| y.value }
+        ace_index = vals.index(11)
+        if (ace_index != nil) && (@total > 21)
+            @hand[ace_index].instance_variable_set(:@value, 1)
             @total = 0
             @total = @hand.inject(0){ |sum,x| sum + x.value }
         end
     end
 
     def analyze_total
+        @total = 0
+        @total = @hand.inject(0){ |sum,x| sum + x.value }
         ace_value
         if @total > 21
             total_result
