@@ -1,5 +1,3 @@
-require 'pry'
-
 class Card
     attr_accessor :rank, :suit, :value
 
@@ -72,10 +70,6 @@ class Deck
     end
 end
 
-# deck = Deck.new
-# deck.shuffle
-# 7.times { puts deck.draw.rank }
-
 class Game
     attr_accessor :wallet, :hand, :shoe, :total, :d_hand, :d_total
 
@@ -118,7 +112,6 @@ class Game
             total_result
             puts "You bust!\n\n----\n\n"
             pay_ten
-            # any key for next round
         else 
             total_result
             get_input
@@ -227,14 +220,6 @@ class Game
         @shoe = Deck.new
             @shoe.shuffle
     end
-
-    # def play_again
-
-    # end
-
-    # def run
-
-    # end
 
     def run_game
         puts "Hello and welcome to the game of blackjack! Let's begin.\n\n"
