@@ -127,14 +127,11 @@ class Game
 
     def new_hand
         2.times { @hand.push(@shoe.draw) }
-        @total = @hand.inject(0){ |sum,x| sum + x.value }
         analyze_total
     end
 
     def hit
         @hand.push(@shoe.draw)
-        @total = 0
-        @total = @hand.inject(0){ |sum,x| sum + x.value }
         analyze_total
     end
     
@@ -160,8 +157,6 @@ class Game
     def dealer_hit
         puts "The dealer hits."
         @d_hand.push(@shoe.draw)
-            @d_total = 0
-            @d_total = @d_hand.inject(0){ |sum,x| sum + x.value }
         dealer_analyze
     end
 
@@ -181,10 +176,23 @@ class Game
         end
     end
 
+    def d_ace_value
+        @d_total = 0
+        @d_total = @d_hand.inject(0){ |sum,x| sum + x.value }
+        vals = @d_hand.map { |y| y.value }
+        ace_index = vals.index(11)
+        if (ace_index != nil) && (@d_total > 21)
+            @d_hand[ace_index].instance_variable_set(:@value, 1)
+            @d_total = 0
+            @d_total = @d_hand.inject(0){ |sum,x| sum + x.value }
+        end
+    end
+
     def dealer_analyze
-        if @d_total > 21 && @d_hand.include?(:A)
-            @d_total = @d_total - 10
-        elsif @d_total > 21
+        @d_total = 0
+        @d_total = @d_hand.inject(0){ |sum,x| sum + x.value }
+        d_ace_value
+        if @d_total > 21
             puts "The dealer's total is #{@d_total}. You win!\n\n----\n\n"
             earn_ten
             return
@@ -198,7 +206,6 @@ class Game
 
     def dealer
         2.times { @d_hand.push(@shoe.draw) }
-        @d_total = @d_hand.inject(0){ |sum,x| sum + x.value }
         dealer_analyze 
     end
 
